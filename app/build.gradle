@@ -40,7 +40,7 @@ dependencies {
     compile 'com.daimajia.slider:library:1.1.5@aar'
 
 
-
+    compile 'com.squareup.okhttp:okhttp-urlconnection:2.2.0'
 
     //multislider lines age
     compile 'io.apptik.widget:multislider:1.2'

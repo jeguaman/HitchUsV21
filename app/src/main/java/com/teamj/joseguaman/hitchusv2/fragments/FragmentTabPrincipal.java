@@ -75,6 +75,7 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
     private SliderLayout mDemoSlider;
     private HashMap<String, String> url_maps;
 
+    private SharedPreferences prefs;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,23 +89,23 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
         fabInfo = (FloatingActionButton) view.findViewById(R.id.fab_info);
 
         mDemoSlider = (SliderLayout) view.findViewById(R.id.slider_principal);
-/*        url_maps.put("Hannibal", "http://static2.hypable.com/wp-content/uploads/2013/12/hannibal-season-2-release-date.jpg");
+        url_maps.put("Hannibal", "http://static2.hypable.com/wp-content/uploads/2013/12/hannibal-season-2-release-date.jpg");
         url_maps.put("Big Bang Theory", "http://tvfiles.alphacoders.com/100/hdclearart-10.png");
         url_maps.put("House of Cards", "http://cdn3.nflximg.net/images/3093/2043093.jpg");
         url_maps.put("Game of Thrones", "http://images.boomsbeat.com/data/images/full/19640/game-of-thrones-season-4-jpg.jpg");
-*/
+
         HashMap<String, Integer> file_maps = new HashMap<String, Integer>();
-        file_maps.put("Hannibal", R.drawable.ic_thumb_up);
+        file_maps.put("Hannibal", R.drawable.ic_chat);
         file_maps.put("Big Bang Theory", R.drawable.ic_chat);
         file_maps.put("House of Cards", R.drawable.ic_error_outline);
         file_maps.put("Game of Thrones", R.drawable.ic_thumb_down);
-/*
+
         for (String name : file_maps.keySet()) {
             TextSliderView textSliderView = new TextSliderView(view.getContext());
             // initialize a SliderLayout
             textSliderView
                     .description(name)
-                    .image(file_maps.get(name))
+                    .image(url_maps.get(name))
                     .setScaleType(BaseSliderView.ScaleType.Fit)
                     .setOnSliderClickListener(this);
 
@@ -115,7 +116,7 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
 
             mDemoSlider.addSlider(textSliderView);
         }
-        */
+
         mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
         mDemoSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
         mDemoSlider.setCustomAnimation(new DescriptionAnimation());
@@ -137,9 +138,13 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
         fabLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Se presionó el FAB like", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //Snackbar.make(view, "Se presionó el FAB like", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                prefs = getContext().getSharedPreferences(PreferencesFile.$SETTINGS_FILE_NAME, PreferencesFile.$MODE_PRIVATE);
 
+                prefs.getString(PreferencesFile.$_PREFERENCE_NICK_NAME, PreferencesFile.$_VALUE_NICK_NAME);
+                /*new SendPetitionOkHttpAsyncTask().execute(prefs.getString(PreferencesFile.$_PREFERENCE_NICK_NAME, PreferencesFile.$_VALUE_NICK_NAME,
+                        prefs.getString(PreferencesFile.$_PREFERENCE_EMAIL, PreferencesFile.$_VALUE_EMAIL,PreferencesFile.$_PREFERENCE_CHECK_FEMALE,)));
+*/
             }
         });
 

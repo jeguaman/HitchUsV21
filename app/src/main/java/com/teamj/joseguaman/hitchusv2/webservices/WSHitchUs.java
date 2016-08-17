@@ -1,8 +1,6 @@
 package com.teamj.joseguaman.hitchusv2.webservices;
 
 
-
-
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -39,7 +37,7 @@ public class WSHitchUs {
         }
     }
 
-    public static String enviarConfiguracionesConsulta(String usuario, String correo, String genero, String edadMin, String latitud, String longitud, String edadMax, String distancia) throws IOException {
+    public static String enviarConfiguracionesConsulta(String usuario, String correo, String genero, String edadMin, String edadMax, String latitud, String longitud, String distancia) throws IOException {
         OkHttpClient client = new OkHttpClient();
         RequestBody formBody = new FormEncodingBuilder().add("nickname", usuario).add("correo", correo)
                 .add("genero", genero).add("edad_min", edadMin).add("edad_max", edadMax)

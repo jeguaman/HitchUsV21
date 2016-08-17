@@ -36,5 +36,7 @@ public class PreferencesFile {
     public static final String $_VALUE_PASSWORD = "password";
     public static final String $_VALUE_NICK_NAME = "hitch_us";
     public static final String $_VALUE_IMAGE_PROFILE = "profiles/default.jpg";
+    public static final Boolean $_VALUE_ACTIVATE = Boolean.TRUE;
+
 
 }

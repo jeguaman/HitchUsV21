@@ -23,17 +23,13 @@ public class IntroActivity extends OnboarderActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-/*
+
         initializeSettings();
-        if (!validateUserLogger()) {
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivity(intent);
-        } else {
+        if (hasSavedPreference()) {
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
         }
 
-*/
         onboarderPages = new ArrayList<OnboarderPage>();
 
         // Create your first page
@@ -64,28 +60,25 @@ public class IntroActivity extends OnboarderActivity {
 
     }
 
-    /*
     private void initializeSettings() {
         prefs = getSharedPreferences(PreferencesFile.$SETTINGS_FILE_NAME, PreferencesFile.$MODE_PRIVATE);
         email = prefs.getString(PreferencesFile.$_PREFERENCE_EMAIL, PreferencesFile.$_VALUE_EMAIL);
         password = prefs.getString(PreferencesFile.$_PREFERENCE_PASSWORD, PreferencesFile.$_VALUE_PASSWORD);
     }
 
-    private Boolean validateUserLogger() {
-        Boolean success = false;
+    private Boolean hasSavedPreference() {
+        Boolean success = true;
         if (email.equals(PreferencesFile.$_VALUE_EMAIL) && password.equals(PreferencesFile.$_VALUE_PASSWORD)) {
-            success = true;
+            success = false;
         }
         return success;
     }
-*/
+
     @Override
     public void onSkipButtonPressed() {
         // Optional: by default it skips onboarder to the end
         super.onSkipButtonPressed();
         // Define your actions when the user press 'Skip' button
-
-
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         startActivity(intent);
     }

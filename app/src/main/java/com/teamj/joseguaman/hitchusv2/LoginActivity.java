@@ -41,8 +41,6 @@ public class LoginActivity extends AppCompatActivity {
 
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         mPasswordView = (EditText) findViewById(R.id.password);
-
-        initializeSettings();
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,7 +49,17 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        startPreference();
+        /*
+        if (hasSavedPreferences()) {
+            logInWithPreferences();
+        } else {
+            initialize();
+        }*/
+    }
 
+    private void startPreference() {
+        prefs = getSharedPreferences(PreferencesFile.$SETTINGS_FILE_NAME, PreferencesFile.$MODE_PRIVATE);
     }
 
     private void validarUsuario() {
@@ -67,14 +75,13 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void initializeSettings() {
-        prefs = getSharedPreferences(PreferencesFile.$SETTINGS_FILE_NAME, PreferencesFile.$MODE_PRIVATE);
-        prefs.getString(PreferencesFile.$_PREFERENCE_EMAIL, PreferencesFile.$_VALUE_EMAIL);
-        prefs.getString(PreferencesFile.$_PREFERENCE_NICK_NAME, PreferencesFile.$_VALUE_NICK_NAME);
-        prefs.getString(PreferencesFile.$_PREFERENCE_PASSWORD, PreferencesFile.$_VALUE_PASSWORD);
-        prefs.getString(PreferencesFile.$_PREFERENCE_IMAGE_PROFILE, PreferencesFile.$_VALUE_IMAGE_PROFILE);
+    /*
+    public void logInWithPreferences() {
+        final String userLogged = prefs.getString(PreferencesFile.$_PREFERENCE_EMAIL, PreferencesFile.$_VALUE_EMAIL);
+        final String passwordLogged = prefs.getString(PreferencesFile.$_PREFERENCE_PASSWORD, PreferencesFile.$_VALUE_PASSWORD);
+        new LoginOkHttpAsyncTask().execute(userLogged, passwordLogged);
     }
-
+*/
     public class LoginOkHttpAsyncTask extends AsyncTask<String, Void, String> {
         ProgressDialog mProgressDialog;
 
@@ -83,8 +90,8 @@ public class LoginActivity extends AppCompatActivity {
             String resp = null;
             if (CommonUtils.isNetworkAvailable(LoginActivity.this)) {
                 try {
-                    resp = Constants.$PATH_PERFIL_USUARIO;
-                    //resp = WSHitchUs.signInUser(params[0], params[1]);
+                    //resp = Constants.$PATH_PERFIL_USUARIO;
+                    resp = WSHitchUs.signInUser(params[0], params[1]);
                     //} catch (IOException e) {
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -106,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                         JSONObject mainObject = null;
                         String nickName = null;
                         String media = null;
-                        String perfil = null;
+                        System.out.println("Response " + response);
                         try {
                             //JSONObject uniObject = mainObject.getJSONObject("perfil");
                             mainObject = new JSONObject(response);
@@ -130,6 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.putString(PreferencesFile.$_PREFERENCE_EMAIL, mEmailView.getText().toString());
+                        editor.putString(PreferencesFile.$_PREFERENCE_PASSWORD, mPasswordView.getText().toString());
                         editor.putString(PreferencesFile.$_PREFERENCE_NICK_NAME, nickName);
                         editor.putString(PreferencesFile.$_PREFERENCE_IMAGE_PROFILE, media);
                         editor.commit();
@@ -174,4 +182,21 @@ public class LoginActivity extends AppCompatActivity {
             super.onPreExecute();
         }
     }
+
+    public Boolean hasSavedPreferences() {
+        prefs = getSharedPreferences(PreferencesFile.$SETTINGS_FILE_NAME, PreferencesFile.$MODE_PRIVATE);
+
+        String userLogged = "";
+        String passwordLogged = "";
+
+        // Restore or Initialize preferences
+        userLogged = prefs.getString(PreferencesFile.$_PREFERENCE_EMAIL, PreferencesFile.$_VALUE_EMAIL);
+        passwordLogged = prefs.getString(PreferencesFile.$_PREFERENCE_PASSWORD, PreferencesFile.$_VALUE_PASSWORD);
+        if (userLogged.equals(PreferencesFile.$_VALUE_EMAIL) && passwordLogged.equals(PreferencesFile.$_VALUE_PASSWORD)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 }

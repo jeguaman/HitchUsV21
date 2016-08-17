@@ -5,7 +5,7 @@ package com.teamj.joseguaman.hitchusv2.constantes;
  */
 public class Constants {
 
-    public static final String $URL = "http://190.15.140.102:3434";
+    public static final String $URL = "http://hitchus.ddns.net:8000";
     public static final String $PATH_LOGIN_USER = "/sweet/api/login";
     public static final String $PATH_BUSCAR_PREFERENCIAS = "/sweet/api/buscar";
     public static final String $PATH_SEND_LIKE = "/sweet/api/control";

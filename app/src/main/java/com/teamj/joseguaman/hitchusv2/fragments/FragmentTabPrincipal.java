@@ -140,10 +140,24 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
             public void onClick(View view) {
                 //Snackbar.make(view, "Se presionó el FAB like", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 prefs = getContext().getSharedPreferences(PreferencesFile.$SETTINGS_FILE_NAME, PreferencesFile.$MODE_PRIVATE);
-
+                String genero = "ALL";
+                if (prefs.getBoolean(PreferencesFile.$_PREFERENCE_CHECK_FEMALE, PreferencesFile.$_VALUE_ACTIVATE)) {
+                    genero = "FEM";
+                } else if (prefs.getBoolean(PreferencesFile.$_PREFERENCE_CHECK_MALE, PreferencesFile.$_VALUE_ACTIVATE)) {
+                    genero = "MAS";
+                } else if (prefs.getBoolean(PreferencesFile.$_PREFERENCE_CHECK_OTHER, PreferencesFile.$_VALUE_ACTIVATE)) {
+                    genero = "OTH";
+                }
                 prefs.getString(PreferencesFile.$_PREFERENCE_NICK_NAME, PreferencesFile.$_VALUE_NICK_NAME);
-                /*new SendPetitionOkHttpAsyncTask().execute(prefs.getString(PreferencesFile.$_PREFERENCE_NICK_NAME, PreferencesFile.$_VALUE_NICK_NAME,
-                        prefs.getString(PreferencesFile.$_PREFERENCE_EMAIL, PreferencesFile.$_VALUE_EMAIL,PreferencesFile.$_PREFERENCE_CHECK_FEMALE,)));
+                /*new SendPetitionOkHttpAsyncTask().execute(
+                        prefs.getString(PreferencesFile.$_PREFERENCE_NICK_NAME, PreferencesFile.$_VALUE_NICK_NAME),
+                        prefs.getString(PreferencesFile.$_PREFERENCE_EMAIL, PreferencesFile.$_VALUE_EMAIL),
+                        genero,
+                        prefs.getString(PreferencesFile.$_PREFERENCE_AGE_START, String.valueOf(PreferencesFile.$_VALUE_START)),
+                        prefs.getString(PreferencesFile.$_PREFERENCE_AGE_END, String.valueOf(PreferencesFile.$_VALUE_END)),
+                        "latitud",
+                        "longitud",
+                        prefs.getString(PreferencesFile.$_PREFERENCE_DISTANCE, String.valueOf(PreferencesFile.$_VALUE_DISTANCE)));
 */
             }
         });

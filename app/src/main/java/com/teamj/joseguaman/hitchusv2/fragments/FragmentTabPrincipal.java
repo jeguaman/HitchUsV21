@@ -83,6 +83,7 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
 
     private SharedPreferences prefs;
     private List<Usuario> listaUsuarios;
+    private int posicion;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -99,44 +100,52 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
         loadSearchInitial();
 /*
         url_maps.put("Hannibal", "http://static2.hypable.com/wp-content/uploads/2013/12/hannibal-season-2-release-date.jpg");
-        url_maps.put("Big Bang Theory", "http://tvfiles.alphacoders.com/100/hdclearart-10.png");
-        url_maps.put("House of Cards", "http://cdn3.nflximg.net/images/3093/2043093.jpg");
-        url_maps.put("Game of Thrones", "http://images.boomsbeat.com/data/images/full/19640/game-of-thrones-season-4-jpg.jpg");
-        url_maps.put("Default", "http://hitchus.ddns.net:8000/media/profiles/default.jpg");
 */
         fabDislike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Se presionó el FAB dislike", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if (listaUsuarios.size() > 0) {
+                    Snackbar.make(view, "Ignorar", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    new SendRefuzeHttpAsyncTask().execute(prefs.getString(PreferencesFile.$_PREFERENCE_NICK_NAME, PreferencesFile.$_VALUE_NICK_NAME), listaUsuarios.get(posicion).getPerfil().getNickName());
+                } else {
+                    Toast.makeText(getActivity().getApplicationContext(), "No dispone de usuarios.", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
         fabLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Se presionó el FAB like", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-
+                if (listaUsuarios.size() > 0) {
+                    Snackbar.make(view, "Like", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                    new SendLikeHttpAsyncTask().execute(prefs.getString(PreferencesFile.$_PREFERENCE_NICK_NAME, PreferencesFile.$_VALUE_NICK_NAME), listaUsuarios.get(posicion).getPerfil().getNickName());
+                } else {
+                    Toast.makeText(getActivity().getApplicationContext(), "No dispone de usuarios.", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
         fabInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Dialog dialog;
-                dialog = new Dialog(view.getContext());
-                dialog.setContentView(R.layout.dialog_information);
-                dialog.setTitle("Información General");
-                loadInformacionUserSelected(dialog);
-                Button dismissButton = (Button) dialog.findViewById(R.id.btn_regresar);
-                dismissButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-                dialog.show();
+                if (listaUsuarios.size() > 0) {
+                    final Dialog dialog;
 
+                    dialog = new Dialog(view.getContext());
+                    dialog.setContentView(R.layout.dialog_information);
+                    dialog.setTitle("Información General");
+                    loadInformacionUserSelected(dialog);
+                    Button dismissButton = (Button) dialog.findViewById(R.id.btn_regresar);
+                    dismissButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.show();
+                } else {
+                    Toast.makeText(getActivity().getApplicationContext(), "No dispone de usuarios para ver su información.", Toast.LENGTH_LONG).show();
+                }
             }
         });
         if (!listaUsuarios.isEmpty()) {
@@ -148,36 +157,40 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
     }
 
     private void presentaacionSlider() {
+        System.out.println("N[umero de usuarios: " + listaUsuarios.size());
+        //if (listaUsuarios.size() > 0 && posicion <= listaUsuarios.size() - 1) {
+        if (listaUsuarios.size() > 0) {
+            mDemoSlider.removeAllSliders();
+            for (String name : listaUsuarios.get(posicion).getUrl_maps().keySet()) {
+                //TextSliderView textSliderView = new TextSliderView(view.getContext());
+                TextSliderView textSliderView = new TextSliderView(getActivity().getApplicationContext());
+                // initialize a SliderLayout
+                textSliderView.description(name).image(listaUsuarios.get(posicion).getUrl_maps().get(name)).setScaleType(BaseSliderView.ScaleType.Fit).setOnSliderClickListener(this);
+                //add your extra information
+                textSliderView.bundle(new Bundle());
+                textSliderView.getBundle().putString("extra", name);
+                mDemoSlider.addSlider(textSliderView);
+            }
 
-        for (String name : listaUsuarios.get(posicion).getUrl_maps().keySet()) {
-            //TextSliderView textSliderView = new TextSliderView(view.getContext());
-            TextSliderView textSliderView = new TextSliderView(getActivity().getApplicationContext());
-            // initialize a SliderLayout
-            textSliderView.description(name).image(listaUsuarios.get(posicion).getUrl_maps().get(name)).setScaleType(BaseSliderView.ScaleType.Fit).setOnSliderClickListener(this);
-            //add your extra information
-            textSliderView.bundle(new Bundle());
-            textSliderView.getBundle().putString("extra", name);
-            mDemoSlider.addSlider(textSliderView);
-        }
-
-        mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
-        mDemoSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
-        mDemoSlider.setCustomAnimation(new DescriptionAnimation());
+            mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
+            mDemoSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+            mDemoSlider.setCustomAnimation(new DescriptionAnimation());
 //        mDemoSlider.setDuration(4000);
-        mDemoSlider.addOnPageChangeListener(this);
+            mDemoSlider.addOnPageChangeListener(this);
 
-        txtUserNickName.setText(listaUsuarios.get(posicion).getPerfil().getNickName() + ", ");
-        if (listaUsuarios.get(posicion).getPerfil().getAnioNacimiento().compareTo(0) != 0) {
-            txtUserEdad.setText(edadPersona(listaUsuarios.get(posicion).getPerfil().getAnioNacimiento()) + ", ");
-        } else {
-            txtUserEdad.setText(",18+");
-        }
-        if (listaUsuarios.get(posicion).getPerfil().getGenero().compareTo("FEM") == 0) {
-            txtUserGenero.setText("Femenino");
-        } else if (listaUsuarios.get(posicion).getPerfil().getGenero().compareTo("MAS") == 0) {
-            txtUserGenero.setText("Masculino");
-        } else {
-            txtUserGenero.setText("Otro");
+            txtUserNickName.setText(listaUsuarios.get(posicion).getPerfil().getNickName() + ", ");
+            if (listaUsuarios.get(posicion).getPerfil().getAnioNacimiento().compareTo(0) != 0) {
+                txtUserEdad.setText(edadPersona(listaUsuarios.get(posicion).getPerfil().getAnioNacimiento()) + ", ");
+            } else {
+                txtUserEdad.setText(",18+");
+            }
+            if (listaUsuarios.get(posicion).getPerfil().getGenero().compareTo("FEM") == 0) {
+                txtUserGenero.setText("Femenino");
+            } else if (listaUsuarios.get(posicion).getPerfil().getGenero().compareTo("MAS") == 0) {
+                txtUserGenero.setText("Masculino");
+            } else {
+                txtUserGenero.setText("Otro");
+            }
         }
     }
 
@@ -193,19 +206,21 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
         } else if (prefs.getBoolean(PreferencesFile.$_PREFERENCE_CHECK_OTHER, PreferencesFile.$_VALUE_ACTIVATE)) {
             genero = "OTH";
         }
+        int valorInicial = prefs.getInt(PreferencesFile.$_PREFERENCE_AGE_START, PreferencesFile.$_VALUE_START);
+        int valorFin = prefs.getInt(PreferencesFile.$_PREFERENCE_AGE_END, PreferencesFile.$_VALUE_END);
+        int distancia = prefs.getInt(PreferencesFile.$_PREFERENCE_DISTANCE, PreferencesFile.$_VALUE_DISTANCE);
         //prefs.getString(PreferencesFile.$_PREFERENCE_NICK_NAME, PreferencesFile.$_VALUE_NICK_NAME);
         new SendConfigurationInitialPeticionHttpAsyncTask().execute(
                 prefs.getString(PreferencesFile.$_PREFERENCE_NICK_NAME, PreferencesFile.$_VALUE_NICK_NAME),
                 prefs.getString(PreferencesFile.$_PREFERENCE_EMAIL, PreferencesFile.$_VALUE_EMAIL),
-                "MAS",
-                prefs.getString(PreferencesFile.$_PREFERENCE_AGE_START, String.valueOf(PreferencesFile.$_VALUE_START)),
-                prefs.getString(PreferencesFile.$_PREFERENCE_AGE_END, String.valueOf(PreferencesFile.$_VALUE_END)),
+                genero,
+                String.valueOf(valorInicial),
+                String.valueOf(valorFin),
                 "-0.3944",
                 "-78.4911",
-                new BigDecimal("1000").multiply(new BigDecimal(prefs.getString(PreferencesFile.$_PREFERENCE_DISTANCE, String.valueOf(PreferencesFile.$_VALUE_DISTANCE)))).toPlainString());
+                new BigDecimal("1000").multiply(new BigDecimal(distancia)).toPlainString());
     }
 
-    private int posicion;
 
     private void processJsonGeneral(String response) {
         listaUsuarios = ContentUtils.getListUsuarioJson(response);
@@ -298,6 +313,7 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
             String resp = null;
             if (CommonUtils.isNetworkAvailable(getActivity())) {
                 try {
+                    System.out.println("parametros a evniar " + params[0] + params[1] + params[2] + params[3] + params[4] + params[5] + params[6] + params[7]);
                     resp = WSHitchUs.enviarConfiguracionesConsulta(params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7]);
                     //resp = Constants.$PATH_LISTA_USUARIOS;
                 } catch (Exception e) {
@@ -318,6 +334,7 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
                 if (response.compareTo("00") != 0) {
                     if (response.compareTo("false") != 0) {
                         processJsonGeneral(response);
+                        System.out.println("El reusltaod es: " + response);
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setTitle("Hitch Us");
@@ -350,4 +367,131 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
         }*/
     }
 
+    public class SendRefuzeHttpAsyncTask extends AsyncTask<String, Void, String> {
+        ProgressDialog mProgressDialog;
+
+        @Override
+        protected String doInBackground(String... params) {
+            String resp = null;
+            if (CommonUtils.isNetworkAvailable(getActivity())) {
+                try {
+                    resp = WSHitchUs.sendRefuzeUser(params[0], params[1]);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                resp = "00";
+            }
+            return resp;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+            }
+            if (response != null) {
+                if (response.compareTo("00") != 0) {
+                    if (response.compareTo("false") != 0) {
+                        posicion++;
+                        Toast.makeText(getActivity().getApplicationContext(), "Descarte exitoso", Toast.LENGTH_SHORT).show();
+                        clearInformacion();
+                        presentaacionSlider();
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Hitch Us");
+                        builder.setMessage("No pudo ignorar al usuario.");
+                        builder.setNeutralButton("Aceptar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        AlertDialog mAlertDialog = builder.create();
+                        mAlertDialog.show();
+                    }
+                } else {
+                    CommonUtils.showSimpleMessageDialog(getActivity().getApplicationContext(), "Revise su conexión a internet.");
+                }
+            }
+            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+            }
+        }
+
+      /*  @Override
+        protected void onPreExecute() {
+            mProgressDialog = new ProgressDialog(getActivity().getApplicationContext());
+            mProgressDialog.setMessage("Buscando personas cerca a tí...");
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+            super.onPreExecute();
+        }*/
+    }
+
+    public class SendLikeHttpAsyncTask extends AsyncTask<String, Void, String> {
+        ProgressDialog mProgressDialog;
+
+        @Override
+        protected String doInBackground(String... params) {
+            String resp = null;
+            if (CommonUtils.isNetworkAvailable(getActivity())) {
+                try {
+                    resp = WSHitchUs.sendLikeUser(params[0], params[1]);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                resp = "00";
+            }
+            return resp;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+            }
+            if (response != null) {
+                if (response.compareTo("00") != 0) {
+                    if (response.compareTo("false") != 0) {
+                        posicion++;
+                        Toast.makeText(getActivity().getApplicationContext(), "Like exitoso", Toast.LENGTH_SHORT).show();
+                        clearInformacion();
+                        presentaacionSlider();
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Hitch Us");
+                        builder.setMessage("No pudo aceptar al usuario.");
+                        builder.setNeutralButton("Aceptar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        AlertDialog mAlertDialog = builder.create();
+                        mAlertDialog.show();
+                    }
+                } else {
+                    CommonUtils.showSimpleMessageDialog(getActivity().getApplicationContext(), "Revise su conexión a internet.");
+                }
+            }
+            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+            }
+        }
+
+      /*  @Override
+        protected void onPreExecute() {
+            mProgressDialog = new ProgressDialog(getActivity().getApplicationContext());
+            mProgressDialog.setMessage("Buscando personas cerca a tí...");
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+            super.onPreExecute();
+        }*/
+    }
+
+    private void clearInformacion() {
+
+    }
 }

@@ -154,14 +154,18 @@ public class ConfigurationActivity extends AppCompatActivity {
         slider_edad.getThumb(0).setValue(prefs.getInt(PreferencesFile.$_PREFERENCE_AGE_START, PreferencesFile.$_VALUE_START));
         slider_edad.getThumb(1).setValue(prefs.getInt(PreferencesFile.$_PREFERENCE_AGE_END, PreferencesFile.$_VALUE_END));
 
-        valorEdadInicial.setText(prefs.getInt(PreferencesFile.$_PREFERENCE_AGE_START, PreferencesFile.$_VALUE_START) + "");
-        valorEdadFinal.setText(prefs.getInt(PreferencesFile.$_PREFERENCE_AGE_END, PreferencesFile.$_VALUE_END) + "");
+        int edadInicial = prefs.getInt(PreferencesFile.$_PREFERENCE_AGE_START, PreferencesFile.$_VALUE_START);
+        int edadFinal = prefs.getInt(PreferencesFile.$_PREFERENCE_AGE_END, PreferencesFile.$_VALUE_END);
+        valorEdadInicial.setText(String.valueOf(edadInicial));
+        valorEdadFinal.setText(String.valueOf(edadFinal));
 
+        int lvlHitch = prefs.getInt(PreferencesFile.$_PREFERENCE_LEVEL_HITCH, PreferencesFile.$_VALUE_LEVEL_HITCH);
         slider_hitch.getThumb(0).setValue(prefs.getInt(PreferencesFile.$_PREFERENCE_LEVEL_HITCH, PreferencesFile.$_VALUE_LEVEL_HITCH));
-        valorHitch.setText(prefs.getInt(PreferencesFile.$_PREFERENCE_LEVEL_HITCH, PreferencesFile.$_VALUE_LEVEL_HITCH) + "");
+        valorHitch.setText(String.valueOf(lvlHitch));
 
+        int distancia = prefs.getInt(PreferencesFile.$_PREFERENCE_DISTANCE, PreferencesFile.$_VALUE_DISTANCE);
         slider_distancia.getThumb(0).setValue(prefs.getInt(PreferencesFile.$_PREFERENCE_DISTANCE, PreferencesFile.$_VALUE_DISTANCE));
-        valorDistancia.setText(prefs.getInt(PreferencesFile.$_PREFERENCE_DISTANCE, PreferencesFile.$_VALUE_DISTANCE) + "");
+        valorDistancia.setText(String.valueOf(distancia));
 
     }
 

@@ -62,7 +62,7 @@ public class WSHitchUs {
 
     public static String sendLikeUser(String correoEmisor, String correoReceptor) throws IOException {
         OkHttpClient client = new OkHttpClient();
-        RequestBody formBody = new FormEncodingBuilder().add("nickname1", correoEmisor).add("nickname2", correoReceptor)
+        RequestBody formBody = new FormEncodingBuilder().add("username1", correoEmisor).add("username2", correoReceptor)
                 .add("acepta", "true").build();
         Request request = new Request.Builder()
                 .url(Constants.$URL + Constants.$PATH_SEND_LIKE)
@@ -82,9 +82,9 @@ public class WSHitchUs {
         }
     }
 
-    public static String sendRefuzeUser(String correoEmisor, String correoReceptor) throws IOException {
+    public static String sendRefuzeUser(String nickName1, String nickName2) throws IOException {
         OkHttpClient client = new OkHttpClient();
-        RequestBody formBody = new FormEncodingBuilder().add("nickname1", correoEmisor).add("nickname2", correoReceptor)
+        RequestBody formBody = new FormEncodingBuilder().add("username1", nickName1).add("username2", nickName2)
                 .add("acepta", "false").build();
         Request request = new Request.Builder()
                 .url(Constants.$URL + Constants.$PATH_SEND_REFUZE)

@@ -50,12 +50,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         startPreference();
-        /*
-        if (hasSavedPreferences()) {
-            logInWithPreferences();
-        } else {
-            initialize();
-        }*/
     }
 
     private void startPreference() {
@@ -75,13 +69,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    /*
-    public void logInWithPreferences() {
-        final String userLogged = prefs.getString(PreferencesFile.$_PREFERENCE_EMAIL, PreferencesFile.$_VALUE_EMAIL);
-        final String passwordLogged = prefs.getString(PreferencesFile.$_PREFERENCE_PASSWORD, PreferencesFile.$_VALUE_PASSWORD);
-        new LoginOkHttpAsyncTask().execute(userLogged, passwordLogged);
-    }
-*/
     public class LoginOkHttpAsyncTask extends AsyncTask<String, Void, String> {
         ProgressDialog mProgressDialog;
 
@@ -115,21 +102,16 @@ public class LoginActivity extends AppCompatActivity {
                         String media = null;
                         System.out.println("Response " + response);
                         try {
-                            //JSONObject uniObject = mainObject.getJSONObject("perfil");
                             mainObject = new JSONObject(response);
                             nickName = mainObject.getString("nickname");
                             JSONArray objImgs = mainObject.getJSONArray("imagenes");
 
-                            //Iterator<String> iter = objImgs.;
-                            System.out.println("objImgs: " + objImgs);
-
                             for (int i = 0; i < objImgs.length(); i++) {
                                 if (objImgs.getJSONObject(i).getBoolean("perfil")) {
-                                    media = objImgs.getJSONObject(i).getString("url");
+                                    media = Constants.$URL + Constants.$PATH_IMAGES + objImgs.getJSONObject(i).getString("url");
                                 } else {
                                     media = Constants.$URL + Constants.$PATH_IMAGES + PreferencesFile.$_VALUE_IMAGE_PROFILE;
                                 }
-                                System.out.println("La Img es : " + media);
                                 break;
                             }
                         } catch (JSONException e) {

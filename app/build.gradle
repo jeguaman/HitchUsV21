@@ -45,4 +45,7 @@ dependencies {
     //multislider lines age
     compile 'io.apptik.widget:multislider:1.2'
 
+    // google
+    //compile 'com.google.maps.android:android-maps-utils:0.4+'
+
 }

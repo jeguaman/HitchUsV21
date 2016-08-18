@@ -31,7 +31,7 @@ public class PreferencesFile {
     public static final int $_VALUE_START = 18;
     public static final int $_VALUE_END = 23;
     public static final int $_VALUE_LEVEL_HITCH = 50;
-    public static final int $_VALUE_DISTANCE = 2;
+    public static final int $_VALUE_DISTANCE = 25;
     public static final String $_VALUE_EMAIL = "hitchus@hitchus.com";
     public static final String $_VALUE_PASSWORD = "password";
     public static final String $_VALUE_NICK_NAME = "hitch_us";

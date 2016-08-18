@@ -30,15 +30,18 @@ import com.daimajia.slider.library.Tricks.ViewPagerEx;
 import com.teamj.joseguaman.hitchusv2.ConfigurationActivity;
 import com.teamj.joseguaman.hitchusv2.MainActivity;
 import com.teamj.joseguaman.hitchusv2.R;
+import com.teamj.joseguaman.hitchusv2.clases.Usuario;
 import com.teamj.joseguaman.hitchusv2.constantes.Constants;
 import com.teamj.joseguaman.hitchusv2.constantes.PreferencesFile;
 import com.teamj.joseguaman.hitchusv2.utils.CommonUtils;
+import com.teamj.joseguaman.hitchusv2.utils.ContentUtils;
 import com.teamj.joseguaman.hitchusv2.webservices.WSHitchUs;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,64 +72,36 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
     private String puntuacionTotal;
 
     private String jsonIndividual;
+    //private String jsonListaGeneral;
 
-    private List<String> listaImagenes;
+
+    private JSONArray listaJsonObject;
 
     private SliderLayout mDemoSlider;
     private HashMap<String, String> url_maps;
 
     private SharedPreferences prefs;
+    private List<Usuario> listaUsuarios;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_fragment_principal, container, false);
-
-        listaImagenes = new ArrayList<>();
         url_maps = new HashMap<String, String>();
-
         fabDislike = (FloatingActionButton) view.findViewById(R.id.fab_dislike);
         fabLike = (FloatingActionButton) view.findViewById(R.id.fab_like);
         fabInfo = (FloatingActionButton) view.findViewById(R.id.fab_info);
-
         mDemoSlider = (SliderLayout) view.findViewById(R.id.slider_principal);
+        txtUserNickName = (TextView) view.findViewById(R.id.txtUserNickName);
+        txtUserEdad = (TextView) view.findViewById(R.id.txtUserEdad);
+        txtUserGenero = (TextView) view.findViewById(R.id.txtUserGenero);
+        loadSearchInitial();
+/*
         url_maps.put("Hannibal", "http://static2.hypable.com/wp-content/uploads/2013/12/hannibal-season-2-release-date.jpg");
         url_maps.put("Big Bang Theory", "http://tvfiles.alphacoders.com/100/hdclearart-10.png");
         url_maps.put("House of Cards", "http://cdn3.nflximg.net/images/3093/2043093.jpg");
         url_maps.put("Game of Thrones", "http://images.boomsbeat.com/data/images/full/19640/game-of-thrones-season-4-jpg.jpg");
-
-        HashMap<String, Integer> file_maps = new HashMap<String, Integer>();
-        file_maps.put("Hannibal", R.drawable.ic_chat);
-        file_maps.put("Big Bang Theory", R.drawable.ic_chat);
-        file_maps.put("House of Cards", R.drawable.ic_error_outline);
-        file_maps.put("Game of Thrones", R.drawable.ic_thumb_down);
-
-        for (String name : file_maps.keySet()) {
-            TextSliderView textSliderView = new TextSliderView(view.getContext());
-            // initialize a SliderLayout
-            textSliderView
-                    .description(name)
-                    .image(url_maps.get(name))
-                    .setScaleType(BaseSliderView.ScaleType.Fit)
-                    .setOnSliderClickListener(this);
-
-            //add your extra information
-            textSliderView.bundle(new Bundle());
-            textSliderView.getBundle()
-                    .putString("extra", name);
-
-            mDemoSlider.addSlider(textSliderView);
-        }
-
-        mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
-        mDemoSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
-        mDemoSlider.setCustomAnimation(new DescriptionAnimation());
-        mDemoSlider.setDuration(4000);
-        mDemoSlider.addOnPageChangeListener(this);
-
-        txtUserNickName = (TextView) view.findViewById(R.id.txtUserNickName);
-        txtUserEdad = (TextView) view.findViewById(R.id.txtUserEdad);
-        txtUserGenero = (TextView) view.findViewById(R.id.txtUserGenero);
-
+        url_maps.put("Default", "http://hitchus.ddns.net:8000/media/profiles/default.jpg");
+*/
         fabDislike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -138,27 +113,8 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
         fabLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Snackbar.make(view, "Se presionó el FAB like", Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                prefs = getContext().getSharedPreferences(PreferencesFile.$SETTINGS_FILE_NAME, PreferencesFile.$MODE_PRIVATE);
-                String genero = "ALL";
-                if (prefs.getBoolean(PreferencesFile.$_PREFERENCE_CHECK_FEMALE, PreferencesFile.$_VALUE_ACTIVATE)) {
-                    genero = "FEM";
-                } else if (prefs.getBoolean(PreferencesFile.$_PREFERENCE_CHECK_MALE, PreferencesFile.$_VALUE_ACTIVATE)) {
-                    genero = "MAS";
-                } else if (prefs.getBoolean(PreferencesFile.$_PREFERENCE_CHECK_OTHER, PreferencesFile.$_VALUE_ACTIVATE)) {
-                    genero = "OTH";
-                }
-                prefs.getString(PreferencesFile.$_PREFERENCE_NICK_NAME, PreferencesFile.$_VALUE_NICK_NAME);
-                /*new SendPetitionOkHttpAsyncTask().execute(
-                        prefs.getString(PreferencesFile.$_PREFERENCE_NICK_NAME, PreferencesFile.$_VALUE_NICK_NAME),
-                        prefs.getString(PreferencesFile.$_PREFERENCE_EMAIL, PreferencesFile.$_VALUE_EMAIL),
-                        genero,
-                        prefs.getString(PreferencesFile.$_PREFERENCE_AGE_START, String.valueOf(PreferencesFile.$_VALUE_START)),
-                        prefs.getString(PreferencesFile.$_PREFERENCE_AGE_END, String.valueOf(PreferencesFile.$_VALUE_END)),
-                        "latitud",
-                        "longitud",
-                        prefs.getString(PreferencesFile.$_PREFERENCE_DISTANCE, String.valueOf(PreferencesFile.$_VALUE_DISTANCE)));
-*/
+                Snackbar.make(view, "Se presionó el FAB like", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+
             }
         });
 
@@ -167,9 +123,8 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
             public void onClick(View view) {
                 final Dialog dialog = new Dialog(view.getContext());
                 dialog.setContentView(R.layout.dialog_information);
-                dialog.setTitle("Custom Dialog");
+                dialog.setTitle("Información General");
                 loadInformacionUserSelected(dialog);
-
                 Button dismissButton = (Button) dialog.findViewById(R.id.btn_regresar);
                 dismissButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -181,10 +136,105 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
 
             }
         });
-
+        if (!listaUsuarios.isEmpty()) {
+            posicion = 0;
+            processUserIndividual();
+            presentaacionSlider();
+        }
         return view;
     }
 
+    private void presentaacionSlider() {
+        System.out.println("la posiciones : " + posicion);
+        for (String name : listaUsuarios.get(posicion).getUrl_maps().keySet()) {
+            //TextSliderView textSliderView = new TextSliderView(view.getContext());
+            TextSliderView textSliderView = new TextSliderView(getActivity().getApplicationContext());
+            // initialize a SliderLayout
+            textSliderView.description(name).image(listaUsuarios.get(posicion).getUrl_maps().get(name)).setScaleType(BaseSliderView.ScaleType.Fit).setOnSliderClickListener(this);
+            //add your extra information
+            textSliderView.bundle(new Bundle());
+            textSliderView.getBundle().putString("extra", name);
+            mDemoSlider.addSlider(textSliderView);
+        }
+
+        mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
+        mDemoSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        mDemoSlider.setCustomAnimation(new DescriptionAnimation());
+//        mDemoSlider.setDuration(4000);
+        mDemoSlider.addOnPageChangeListener(this);
+    }
+
+    private void loadSearchInitial() {
+        listaUsuarios = new ArrayList<>();
+        prefs = getContext().getSharedPreferences(PreferencesFile.$SETTINGS_FILE_NAME, PreferencesFile.$MODE_PRIVATE);
+
+        String genero = "ALL";
+        if (prefs.getBoolean(PreferencesFile.$_PREFERENCE_CHECK_FEMALE, PreferencesFile.$_VALUE_ACTIVATE)) {
+            genero = "FEM";
+        } else if (prefs.getBoolean(PreferencesFile.$_PREFERENCE_CHECK_MALE, PreferencesFile.$_VALUE_ACTIVATE)) {
+            genero = "MAS";
+        } else if (prefs.getBoolean(PreferencesFile.$_PREFERENCE_CHECK_OTHER, PreferencesFile.$_VALUE_ACTIVATE)) {
+            genero = "OTH";
+        }
+        //prefs.getString(PreferencesFile.$_PREFERENCE_NICK_NAME, PreferencesFile.$_VALUE_NICK_NAME);
+        new SendConfigurationInitialPeticionHttpAsyncTask().execute(
+                prefs.getString(PreferencesFile.$_PREFERENCE_NICK_NAME, PreferencesFile.$_VALUE_NICK_NAME),
+                prefs.getString(PreferencesFile.$_PREFERENCE_EMAIL, PreferencesFile.$_VALUE_EMAIL),
+                "MAS",
+                prefs.getString(PreferencesFile.$_PREFERENCE_AGE_START, String.valueOf(PreferencesFile.$_VALUE_START)),
+                prefs.getString(PreferencesFile.$_PREFERENCE_AGE_END, String.valueOf(PreferencesFile.$_VALUE_END)),
+                "-0.3944",
+                "-78.4911",
+                new BigDecimal("1000").multiply(new BigDecimal(prefs.getString(PreferencesFile.$_PREFERENCE_DISTANCE, String.valueOf(PreferencesFile.$_VALUE_DISTANCE)))).toPlainString());
+    }
+
+    private int posicion;
+
+    private void processJsonGeneral(String response) {
+        listaUsuarios = ContentUtils.getListUsuarioJson(response);
+        posicion = 0;
+
+        for (Usuario user : listaUsuarios) {
+            for (int i = 0; i < user.getPerfil().getListaImagenes().size(); i++) {
+                user.getUrl_maps().put(user.getPerfil().getListaImagenes().get(i).getDescripcion(), Constants.$URL + Constants.$PATH_IMAGES + user.getPerfil().getListaImagenes().get(i).getUrl());
+                //url_maps.put(user.getPerfil().getListaImagenes().get(i).getDescripcion(), Constants.$URL + Constants.$PATH_IMAGES + user.getPerfil().getListaImagenes().get(i).getUrl());
+            }
+            //url_maps.put(objImgs.getJSONObject(j).getString("descripcion"), Constants.$URL + Constants.$PATH_IMAGES + objImgs.getJSONObject(j).getString("url"));
+        }
+        presentaacionSlider();
+        try {
+            /*
+            listaJsonObject = new JSONArray(response);
+            for (int i = 0; i < listaJsonObject.length(); i++) {
+                System.out.println("Perfil : " + listaJsonObject.getJSONObject(i));
+            }
+*/
+            /*
+            distancia = mainObject.getString("distancia");
+            puntuacionTotal = mainObject.getString("puntuacion_total");
+            mainObject = new JSONObject(response);
+            JSONArray objPerfiles = mainObject.getJSONArray("perfil");
+            System.out.println("objPerfiles: " + objPerfiles);
+            for (int i = 0; i < objPerfiles.length(); i++) {
+                //sacar los user, nickname, email, estatura, por cada i
+
+                JSONArray objImgs = mainObject.getJSONArray("imagenes");
+                for (int j = 0; j < objImgs.length(); j++) {
+                    if (objImgs.getJSONObject(j).getBoolean("publica")) {
+                        url_maps.put(objImgs.getJSONObject(j).getString("descripcion"), Constants.$URL + Constants.$PATH_IMAGES + objImgs.getJSONObject(j).getString("url"));
+                        //listaImagenes.add(Constants.$URL + Constants.$PATH_IMAGES + objImgs.getJSONObject(j).getString("url"));
+                    }
+                }
+            }*/
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void processUserIndividual() {
+        //cargar informacion indiidual
+
+    }
 
     private void loadInformacionUserSelected(Dialog dialog) {
 
@@ -211,7 +261,7 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
      */
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+        Log.d("Slider Demo", "Page Scrolled: " + position + " float Position: " + positionOffset + " positionOffsetPixels " + positionOffsetPixels);
     }
 
     /**
@@ -245,18 +295,16 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
 
     }
 
-    public class SendPetitionOkHttpAsyncTask extends AsyncTask<String, Void, String> {
+    public class SendConfigurationInitialPeticionHttpAsyncTask extends AsyncTask<String, Void, String> {
         ProgressDialog mProgressDialog;
 
         @Override
         protected String doInBackground(String... params) {
             String resp = null;
             if (CommonUtils.isNetworkAvailable(getActivity())) {
-                //if (CommonUtils.isNetworkAvailable(getContext().getApplicationContext()))
                 try {
-                    resp = Constants.$PATH_LISTA_USUARIOS;
-                    //resp = WSHitchUs.enviarConfiguracionesConsulta(params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7]);
-                    //} catch (IOException e) {
+                    resp = WSHitchUs.enviarConfiguracionesConsulta(params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7]);
+                    //resp = Constants.$PATH_LISTA_USUARIOS;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -274,31 +322,11 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
             if (response != null) {
                 if (response.compareTo("00") != 0) {
                     if (response.compareTo("false") != 0) {
-                        JSONObject mainObject = null;
-                        try {
-                            distancia = mainObject.getString("distancia");
-                            puntuacionTotal = mainObject.getString("puntuacion_total");
-                            mainObject = new JSONObject(response);
-                            JSONArray objPerfiles = mainObject.getJSONArray("perfil");
-                            System.out.println("objPerfiles: " + objPerfiles);
-                            for (int i = 0; i < objPerfiles.length(); i++) {
-                                //sacar los user, nickname, email, estatura, por cada i
-                                //objPerfiles.getJSONObject(i).getBoolean("perfil");
-                                JSONArray objImgs = mainObject.getJSONArray("imagenes");
-                                for (int j = 0; j < objImgs.length(); j++) {
-                                    if (objImgs.getJSONObject(j).getBoolean("publica") && !objImgs.getJSONObject(j).getBoolean("perfil")) {
-                                        //url_maps.put(objImgs.getJSONObject(j).getString("descripcion"), Constants.$URL + Constants.$PATH_IMAGES + objImgs.getJSONObject(j).getString("url"));
-                                        listaImagenes.add(Constants.$URL + Constants.$PATH_IMAGES + objImgs.getJSONObject(j).getString("url"));
-                                    }
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        processJsonGeneral(response);
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setTitle("Hitch Us");
-                        builder.setMessage("Sus credenciales son incorrectas.");
+                        builder.setMessage("No tiene usuarios cerca.");
                         builder.setNeutralButton("Aceptar", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -308,8 +336,6 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
                         AlertDialog mAlertDialog = builder.create();
                         mAlertDialog.show();
                     }
-
-
                 } else {
                     CommonUtils.showSimpleMessageDialog(getActivity().getApplicationContext(), "Revise su conexión a internet.");
                 }
@@ -319,15 +345,14 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
             }
         }
 
-        @Override
+      /*  @Override
         protected void onPreExecute() {
             mProgressDialog = new ProgressDialog(getActivity().getApplicationContext());
-            mProgressDialog.setMessage("Iniciando Sesión...");
+            mProgressDialog.setMessage("Buscando personas cerca a tí...");
             mProgressDialog.setCancelable(false);
             mProgressDialog.show();
             super.onPreExecute();
-        }
+        }*/
     }
-
 
 }

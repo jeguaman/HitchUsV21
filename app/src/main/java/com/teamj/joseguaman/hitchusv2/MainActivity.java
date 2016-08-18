@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Principal").setIcon(R.drawable.ic_group));
-        tabLayout.addTab(tabLayout.newTab().setText("Mensajes"));
-        tabLayout.addTab(tabLayout.newTab().setText("Configuración"));
+        tabLayout.addTab(tabLayout.newTab().setText("Mensajes").setIcon(R.drawable.ic_message));
+        tabLayout.addTab(tabLayout.newTab().setText("Configuración").setIcon(R.drawable.ic_settings));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);

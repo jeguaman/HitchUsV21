@@ -43,6 +43,7 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -86,6 +87,7 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_fragment_principal, container, false);
+
         url_maps = new HashMap<String, String>();
         fabDislike = (FloatingActionButton) view.findViewById(R.id.fab_dislike);
         fabLike = (FloatingActionButton) view.findViewById(R.id.fab_like);
@@ -121,7 +123,8 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
         fabInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Dialog dialog = new Dialog(view.getContext());
+                final Dialog dialog;
+                dialog = new Dialog(view.getContext());
                 dialog.setContentView(R.layout.dialog_information);
                 dialog.setTitle("Información General");
                 loadInformacionUserSelected(dialog);
@@ -137,15 +140,15 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
             }
         });
         if (!listaUsuarios.isEmpty()) {
-            posicion = 0;
-            processUserIndividual();
+            //posicion = 0;
             presentaacionSlider();
         }
+
         return view;
     }
 
     private void presentaacionSlider() {
-        System.out.println("la posiciones : " + posicion);
+
         for (String name : listaUsuarios.get(posicion).getUrl_maps().keySet()) {
             //TextSliderView textSliderView = new TextSliderView(view.getContext());
             TextSliderView textSliderView = new TextSliderView(getActivity().getApplicationContext());
@@ -162,6 +165,20 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
         mDemoSlider.setCustomAnimation(new DescriptionAnimation());
 //        mDemoSlider.setDuration(4000);
         mDemoSlider.addOnPageChangeListener(this);
+
+        txtUserNickName.setText(listaUsuarios.get(posicion).getPerfil().getNickName() + ", ");
+        if (listaUsuarios.get(posicion).getPerfil().getAnioNacimiento().compareTo(0) != 0) {
+            txtUserEdad.setText(edadPersona(listaUsuarios.get(posicion).getPerfil().getAnioNacimiento()) + ", ");
+        } else {
+            txtUserEdad.setText(",18+");
+        }
+        if (listaUsuarios.get(posicion).getPerfil().getGenero().compareTo("FEM") == 0) {
+            txtUserGenero.setText("Femenino");
+        } else if (listaUsuarios.get(posicion).getPerfil().getGenero().compareTo("MAS") == 0) {
+            txtUserGenero.setText("Masculino");
+        } else {
+            txtUserGenero.setText("Otro");
+        }
     }
 
     private void loadSearchInitial() {
@@ -197,57 +214,35 @@ public class FragmentTabPrincipal extends Fragment implements BaseSliderView.OnS
         for (Usuario user : listaUsuarios) {
             for (int i = 0; i < user.getPerfil().getListaImagenes().size(); i++) {
                 user.getUrl_maps().put(user.getPerfil().getListaImagenes().get(i).getDescripcion(), Constants.$URL + Constants.$PATH_IMAGES + user.getPerfil().getListaImagenes().get(i).getUrl());
-                //url_maps.put(user.getPerfil().getListaImagenes().get(i).getDescripcion(), Constants.$URL + Constants.$PATH_IMAGES + user.getPerfil().getListaImagenes().get(i).getUrl());
             }
-            //url_maps.put(objImgs.getJSONObject(j).getString("descripcion"), Constants.$URL + Constants.$PATH_IMAGES + objImgs.getJSONObject(j).getString("url"));
         }
         presentaacionSlider();
-        try {
-            /*
-            listaJsonObject = new JSONArray(response);
-            for (int i = 0; i < listaJsonObject.length(); i++) {
-                System.out.println("Perfil : " + listaJsonObject.getJSONObject(i));
-            }
-*/
-            /*
-            distancia = mainObject.getString("distancia");
-            puntuacionTotal = mainObject.getString("puntuacion_total");
-            mainObject = new JSONObject(response);
-            JSONArray objPerfiles = mainObject.getJSONArray("perfil");
-            System.out.println("objPerfiles: " + objPerfiles);
-            for (int i = 0; i < objPerfiles.length(); i++) {
-                //sacar los user, nickname, email, estatura, por cada i
-
-                JSONArray objImgs = mainObject.getJSONArray("imagenes");
-                for (int j = 0; j < objImgs.length(); j++) {
-                    if (objImgs.getJSONObject(j).getBoolean("publica")) {
-                        url_maps.put(objImgs.getJSONObject(j).getString("descripcion"), Constants.$URL + Constants.$PATH_IMAGES + objImgs.getJSONObject(j).getString("url"));
-                        //listaImagenes.add(Constants.$URL + Constants.$PATH_IMAGES + objImgs.getJSONObject(j).getString("url"));
-                    }
-                }
-            }*/
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void processUserIndividual() {
-        //cargar informacion indiidual
 
     }
 
     private void loadInformacionUserSelected(Dialog dialog) {
-
         txtNombre = (EditText) dialog.findViewById(R.id.txt_nombre);
-        txtNombre.setText("Put your dialog text here.");
+        txtNombre.setText(listaUsuarios.get(posicion).getPerfil().getNickName());
         txtEdad = (EditText) dialog.findViewById(R.id.txt_edad);
+        txtEdad.setText(edadPersona(listaUsuarios.get(posicion).getPerfil().getAnioNacimiento()));
         txtGenero = (EditText) dialog.findViewById(R.id.txt_genero);
+        txtGenero.setText(listaUsuarios.get(posicion).getPerfil().getGenero());
         txtLugarOrigen = (EditText) dialog.findViewById(R.id.txt_lugar_origen);
+        txtLugarOrigen.setText(listaUsuarios.get(posicion).getPerfil().getPaisOrigen());
         txtEstatura = (EditText) dialog.findViewById(R.id.txt_estatura);
+        txtEstatura.setText(String.valueOf(listaUsuarios.get(posicion).getPerfil().getEstatura()));
         txtContextura = (EditText) dialog.findViewById(R.id.txt_contextura);
+        txtContextura.setText(listaUsuarios.get(posicion).getPerfil().getContextura());
         txtEducacion = (EditText) dialog.findViewById(R.id.txt_educacion);
+        txtEducacion.setText(listaUsuarios.get(posicion).getPerfil().getNivelEducacion());
         txtOcupacion = (EditText) dialog.findViewById(R.id.txt_ocupacion);
+        txtOcupacion.setText(String.valueOf(listaUsuarios.get(posicion).getPerfil().getTrabajo()));
+    }
 
+    private String edadPersona(Integer anio) {
+        Calendar fecha = Calendar.getInstance();
+        Integer anioActual = fecha.get(Calendar.YEAR);
+        return String.valueOf(anioActual - anio);
     }
 
     /**
